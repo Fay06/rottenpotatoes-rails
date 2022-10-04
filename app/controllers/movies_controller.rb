@@ -7,6 +7,7 @@ class MoviesController < ApplicationController
   end
 
   def index
+
     if params[:ratings] == nil
       @movies = Movie.all
       @ratings_to_show = []
@@ -14,7 +15,18 @@ class MoviesController < ApplicationController
       @movies = Movie.where(rating: params[:ratings].keys)
       @ratings_to_show = params[:ratings].keys
     end
-      @all_ratings = Movie.all_ratings 
+
+    @all_ratings = Movie.all_ratings 
+
+    if params.has_key?(:sort_by)
+      if params[:sort_by] == 'title'
+        @title_header = 'hilite bg-warning'
+        @movies = @movies.order('title')
+      else
+        @release_date_header = 'hilite bg-warning'
+        @movies = @movies.order('release_date')
+      end
+    end
   end
 
   def new
