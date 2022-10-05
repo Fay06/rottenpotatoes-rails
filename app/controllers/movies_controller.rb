@@ -39,12 +39,12 @@ class MoviesController < ApplicationController
     end
 
     if params[:ratings] == nil and params[:sort_by] == nil
-      if session[:full_ratings] != nil and session[:sort_by] != nil
-        redirect_to movies_path(:ratings => session[:full_ratings], :sort_by => session[:sort_by])
-      elsif session[:full_ratings] == nil
-        redirect_to movies_path(:ratings => session[:full_ratings])
-      elsif session[:sort_by] != nil
-        redirect_to movies_path(:sort_by => session[:sort_by])
+      if session[:full_ratings] != nil and session[:sort_by] == nil
+         redirect_to movies_path(:ratings => session[:full_ratings])
+      elsif session[:full_ratings] == nil and session[:sort_by] != nil
+         redirect_to movies_path(:sort_by => session[:sort_by])
+      elsif session[:full_ratings] != nil and session[:sort_by] != nil
+         redirect_to movies_path(:ratings => session[:full_ratings], :sort_by => session[:sort_by])
       end
     end
 
