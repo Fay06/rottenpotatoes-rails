@@ -9,7 +9,7 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.all_ratings
     
-    if session[:ratings] == nil || session[:sort_by] == nil
+    if session[:ratings] == nil and session[:sort_by] == nil
       hash = Hash[@all_ratings.collect {|key| [key, '1']}]
       session[:ratings] = hash if session[:ratings] == nil
       session[:sort_by] = '' if session[:sort_by] == nil
