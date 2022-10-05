@@ -7,37 +7,47 @@ class MoviesController < ApplicationController
   end
 
   def index
+
     @all_ratings = Movie.all_ratings
     
-    if session[:ratings] == nil and session[:sort_by] == nil
-      hash = Hash[@all_ratings.collect {|key| [key, '1']}]
-      session[:ratings] = hash if session[:ratings] == nil
-      session[:sort_by] = '' if session[:sort_by] == nil
-      redirect_to movies_path(:ratings => hash, :sort_by => '') and return
-    end  
-
     if params[:ratings] == nil and session[:ratings] == nil
       @movies = Movie.all
-      @ratings_to_show = []
+      @ratings_to_show = @all_ratings
     elsif params[:ratings] == nil and session[:ratings] != nil
       @movies = Movie.where(rating: session[:ratings])
       @ratings_to_show = session[:ratings]
-      params[:ratings] = @ratings_to_show
     else
       @movies = Movie.where(rating: params[:ratings].keys)
       @ratings_to_show = params[:ratings].keys
       session[:ratings] = @ratings_to_show
+      session[:full_ratings] = params[:ratings]
     end
 
+    sorting_way = nil
     if params[:sort_by] != nil
-      @movies = @movies.order(params[:sort_by])
+      sorting_way = params[:sort_by]
+      session[:sort_by] = sorting_way
+    elsif session[:sort_by] != nil
+      sorting_way = session[:sort_by]
     end
-    session[:sort_by] = params[:sort_by]
-    if params[:sort_by] == 'title'
+
+    @movies = @movies.order(sorting_way)
+    if sorting_way == 'title'
       @title_header = 'hilite bg-warning'       
-    elsif params[:sort_by] == 'release_date'
+    elsif sorting_way == 'release_date'
       @release_date_header = 'hilite bg-warning'
     end
+
+    if params[:ratings] == nil and params[:sort_by] == nil
+      if session[:full_ratings] != nil and session[:sort_by] == nil
+         redirect_to movies_path(:ratings => session[:full_ratings])
+      elsif session[:full_ratings] == nil and session[:sort_by] != nil
+         redirect_to movies_path(:sort_by => session[:sort_by])
+      elsif session[:full_ratings] != nil and session[:sort_by] != nil
+         redirect_to movies_path(:ratings => session[:full_ratings], :sort_by => session[:sort_by])
+      end
+    end
+
   end
 
   def new
