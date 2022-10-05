@@ -18,14 +18,12 @@ class MoviesController < ApplicationController
 
     @all_ratings = Movie.all_ratings 
 
+    @title_header = ''
+    @release_date_header = ''
     if params.has_key?(:sort_by)
-      if params[:sort_by] == 'title'
-        @title_header = 'hilite bg-warning'
-        @movies = @movies.order('title')
-      else
-        @release_date_header = 'hilite bg-warning'
-        @movies = @movies.order('release_date')
-      end
+      @movies = @movies.order(params[:sort_by])
+      @title_header = 'hilite bg-warning' if params[:sort_by]=='title'
+      @release_date_header = 'hilite bg-warning' if params[:sort_by]=='release_date'
     end
   end
 
