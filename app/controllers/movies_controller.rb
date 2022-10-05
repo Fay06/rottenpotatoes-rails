@@ -7,25 +7,29 @@ class MoviesController < ApplicationController
   end
 
   def index
-
-    if params[:ratings] == nil
+    @all_ratings = Movie.all_ratings
+    
+    if params[:ratings] == nil and session[:ratings] == nil
       @movies = Movie.all
       @ratings_to_show = []
+    elsif params[:ratings] == nil and session[:ratings] != nil
+      @movies = Movie.where(rating: session[:ratings])
+      @ratings_to_show = session[:ratings]
+      params[:ratings] = @ratings_to_show
     else
       @movies = Movie.where(rating: params[:ratings].keys)
       @ratings_to_show = params[:ratings].keys
+      session[:ratings] = @ratings_to_show
     end
 
-    @all_ratings = Movie.all_ratings 
-
-    if params.has_key?(:sort_by)
-      if params[:sort_by] == 'title'
-        @title_header = 'hilite bg-warning'
-        @movies = @movies.order('title')
-      else
-        @release_date_header = 'hilite bg-warning'
-        @movies = @movies.order('release_date')
-      end
+    if params[:sort_by] != nil
+      @movies = @movies.order(params[:sort_by])
+    end
+    session[:sort_by] = params[:sort_by]
+    if params[:sort_by] == 'title'
+      @title_header = 'hilite bg-warning'       
+    elsif params[:sort_by] == 'release_date'
+      @release_date_header = 'hilite bg-warning'
     end
   end
 
